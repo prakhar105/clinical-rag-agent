@@ -1,107 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Clinical Agent</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 2rem;
-            background: #f9f9f9;
-            color: #333;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clinical Agent</title>
+  <style>
+    :root {
+      --primary-bg: #111;
+      --secondary-bg: #1a1a1a;
+      --border-color: #333;
+      --accent-color: #00aaff;
+      --text-color: #f1f1f1;
+      --input-bg: #2a2a2a;
+      --btn-bg: #00aaff;
+      --btn-hover: #0077cc;
+    }
 
-        h1 {
-            color: #2a2a2a;
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--primary-bg);
+      color: var(--text-color);
+      margin: 2rem;
+    }
 
-        #chatbox {
-            width: 100%;
-            height: 300px;
-            border: 1px solid #ccc;
-            padding: 1rem;
-            background: #fff;
-            overflow-y: auto;
-            margin-bottom: 1rem;
-            white-space: pre-wrap;
-            line-height: 1.5;
-            border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
+    h1 {
+      color: var(--accent-color);
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
 
-        #query {
-            width: 70%;
-            padding: 0.5rem;
-            font-size: 1rem;
-        }
+    #chatbox {
+      background-color: var(--secondary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      margin-bottom: 1.5rem;
+    }
 
-        #submitBtn, #uploadBtn {
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            margin-left: 0.5rem;
-            cursor: pointer;
-        }
+    #answer {
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
 
-        #uploadForm {
-            margin-top: 1.5rem;
-        }
-    </style>
+    #context-toggle {
+      color: var(--accent-color);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    #context-toggle:hover {
+      text-decoration: underline;
+    }
+
+    #context-box {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background-color: #222;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      white-space: pre-wrap;
+      font-size: 0.95rem;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      border-radius: 6px;
+      outline: none;
+    }
+
+    button {
+      padding: 0.75rem 1.25rem;
+      font-size: 1rem;
+      background-color: var(--btn-bg);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    button:hover {
+      background-color: var(--btn-hover);
+    }
+
+    #uploadForm {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1rem;
+      background-color: var(--secondary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    #uploadForm label {
+      font-weight: 500;
+    }
+
+    input[type="file"] {
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      width: 100%;
+      cursor: pointer;
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+      background-color: var(--btn-bg);
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 1rem;
+    }
+
+    input[type="file"]::-webkit-file-upload-button:hover {
+      background-color: var(--btn-hover);
+    }
+
+    @media (max-width: 768px) {
+      form {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Clinical Agent</h1>
+  <h1>🧬 Clinical Agent</h1>
 
-    <div id="chatbox">Reply from RAG system will be shown here…</div>
+  <div id="chatbox">
+    <div id="answer"><strong>🧠 Answer:</strong><br>Waiting for your question...</div>
+    <div id="context-toggle" style="display: none;">▶️ Show Source Context</div>
+    <div id="context-box"></div>
+  </div>
 
-    <form id="askForm">
-        <input type="text" id="query" name="question" placeholder="Ask about IL-6, inflammation, treatments..." required />
-        <button id="submitBtn" type="submit">Enter</button>
-    </form>
+  <form id="askForm">
+    <input type="text" id="query" name="question" placeholder="Ask about IL-6, inflammation, treatments..." required />
+    <button type="submit">Enter</button>
+  </form>
 
-    <form id="uploadForm" enctype="multipart/form-data">
-        <p>Add a new file (PDF or TXT):</p>
-        <input type="file" name="file" accept=".pdf,.txt" />
-        <button type="submit" id="uploadBtn">Upload</button>
-    </form>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <label for="file">📄 Add a new file (PDF or TXT):</label>
+    <input type="file" name="file" id="file" accept=".pdf,.txt" />
+    <button type="submit">Upload</button>
+  </form>
 
-    <script>
-        const askForm = document.getElementById("askForm");
-        const chatbox = document.getElementById("chatbox");
-        const queryInput = document.getElementById("query");
-        const uploadForm = document.getElementById("uploadForm");
+  <script>
+    const askForm = document.getElementById("askForm");
+    const chatbox = document.getElementById("chatbox");
+    const queryInput = document.getElementById("query");
+    const uploadForm = document.getElementById("uploadForm");
+    const answerEl = document.getElementById("answer");
+    const contextToggle = document.getElementById("context-toggle");
+    const contextBox = document.getElementById("context-box");
 
-        // Focus input on load
-        queryInput.focus();
+    queryInput.focus();
 
-        askForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(askForm);
-            chatbox.innerText = "Thinking...";
+    askForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(askForm);
+      answerEl.innerHTML = "<strong>🧠 Answer:</strong><br>💭 Thinking…";
+      contextBox.style.display = "none";
+      contextBox.innerText = "";
+      contextToggle.style.display = "none";
 
-            try {
-                const res = await fetch("/ask", { method: "POST", body: formData });
-                const data = await res.json();
-                chatbox.innerText = data.reply;
-            } catch (error) {
-                chatbox.innerText = "Error retrieving response.";
-                console.error(error);
-            }
-        };
+      try {
+        const res = await fetch("/ask", { method: "POST", body: formData });
+        const data = await res.json();
 
-        uploadForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(uploadForm);
+        const answerText = data.reply?.answer || "No answer returned.";
+        const contextArray = data.reply?.context;
+        const contextText = Array.isArray(contextArray)
+          ? contextArray.join("\n\n---\n\n")
+          : (contextArray || "No context available.");
 
-            try {
-                const res = await fetch("/upload", { method: "POST", body: formData });
-                const data = await res.json();
-                alert(data.message || "File uploaded successfully.");
-            } catch (error) {
-                alert("File upload failed.");
-                console.error(error);
-            }
-        };
-    </script>
+        answerEl.innerHTML = `<strong>🧠 Answer:</strong><br>${answerText}`;
+        contextBox.innerText = contextText;
+        contextToggle.style.display = "inline-block";
+      } catch (err) {
+        answerEl.innerHTML = "<strong>🧠 Answer:</strong><br>❌ Error retrieving response.";
+        console.error(err);
+      }
+    };
 
+    contextToggle.addEventListener("click", () => {
+      const isVisible = contextBox.style.display === "block";
+      contextBox.style.display = isVisible ? "none" : "block";
+      contextToggle.innerText = isVisible ? "▶️ Show Source Context" : "🔽 Hide Source Context";
+    });
+
+    uploadForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(uploadForm);
+      try {
+        const res = await fetch("/upload", { method: "POST", body: formData });
+        const data = await res.json();
+        alert(data.message || "✅ File uploaded successfully.");
+      } catch (err) {
+        alert("❌ File upload failed.");
+        console.error(err);
+      }
+    };
+  </script>
 </body>
 </html>

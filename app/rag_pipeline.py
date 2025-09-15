@@ -77,8 +77,7 @@ generator = pipeline(
     temperature=0.3,
     top_p=0.9,
     repetition_penalty=1.2,
-    #return_full_text=False,  # ⛔ Prevent echoing input
-    eos_token_id=tokenizer.eos_token_id,  # ✅ Optional
+    eos_token_id=tokenizer.eos_token_id,
 )
 
 llm = HuggingFacePipeline(pipeline=generator)
@@ -88,19 +87,36 @@ qa_chain = RetrievalQA.from_chain_type(
     llm=llm,
     chain_type="stuff",
     retriever=vectorstore.as_retriever(search_kwargs={"k": 5}),
-    return_source_documents=False,
+    return_source_documents=True,  # ✅ Enable to get `context`
     chain_type_kwargs={"prompt": prompt_template}
 )
 
 
 # 🤖 Inference API
-def answer_question(query: str) -> str:
+def answer_question(query: str) -> dict:
     try:
         if query.strip().lower() in {"hello", "hi", "hey"}:
-            return "Hi! I’m your clinical assistant. Ask me about Type 2 diabetes, inflammation, or treatment options."
+            return {
+                "answer": "Hi! I’m your clinical assistant. Ask me about Type 2 diabetes, inflammation, or treatment options.",
+                "context": ""
+            }
 
-        raw_answer = qa_chain.run(query)
-        return extract_answer_from_output(clean_biogpt_output(raw_answer))
+        result = qa_chain({"query": query})
+
+        answer_clean = extract_answer_from_output(clean_biogpt_output(result["result"]))
+        print("Answer clean :", answer_clean)
+        context_docs = result.get("source_documents", [])
+
+        context_text = "\n\n---\n\n".join(doc.page_content for doc in context_docs) if context_docs else "No context found."
+        print("Context Text :", context_text)
+
+        return {
+            "answer": answer_clean,
+            "context": context_text
+        }
 
     except Exception as e:
-        return f"An internal error occurred: {str(e)}"
+        return {
+            "answer": f"❌ An internal error occurred: {str(e)}",
+            "context": ""
+        }
