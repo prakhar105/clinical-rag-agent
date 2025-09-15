@@ -104,8 +104,3 @@ uv run uvicorn api.main:app --reload --port 8000
 - [ ] Enable feedback loop for user correction
 
 ---
-
-## 📬 Contact
-
-Made with ❤️ by [QuantumLeap Labs](https://github.com/prakhar105)  
-Questions? Collabs? DM [@quantumleap](https://www.linkedin.com/in/...) or raise an issue in the repo.
