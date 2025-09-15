@@ -1,0 +1,6 @@
+.venv
+__pycache__
+cord-19_2020-04-10
+offload_biogpt
+vector_store
+data
