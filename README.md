@@ -4,6 +4,7 @@
 
 All computation runs locally (e.g., RTX 4060 laptop), ensuring no sensitive patient data leaves the device. The architecture simulates **Multi-Party Computation (MPC)** concepts for privacy-preserving workflows.
 
+![](https://github.com/prakhar105/clinical-rag-agent/blob/main/assests/app.png)
 ---
 
 ## 🧩 Core Features
