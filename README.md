@@ -1,5 +1,5 @@
 # 🩺 MedPrivAgent – Privacy-Aware Clinical AI Assistant
-
+![](https://github.com/prakhar105/clinical-rag-agent/blob/main/assests/logo.png)
 **MedPrivAgent** is a local, privacy-preserving clinical assistant built using **Retrieval-Augmented Generation (RAG)** to help healthcare professionals query and summarize clinical information. It uses **BioGPT-Large** for generation, **Qdrant** for semantic retrieval, and supports **secure remote access** through **Tailscale**.
 
 All computation runs locally (e.g., RTX 4060 laptop), ensuring no sensitive patient data leaves the device. The architecture simulates **Multi-Party Computation (MPC)** concepts for privacy-preserving workflows.
