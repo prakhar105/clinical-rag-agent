@@ -7,27 +7,27 @@ All computation runs locally (e.g., RTX 4060 laptop), ensuring no sensitive pati
 ![](https://github.com/prakhar105/clinical-rag-agent/blob/main/assests/app.png)
 ---
 
-## 🧩 Core Features
+##  Core Features
 
-### 🔍 Input
+###  Input
 - Textual medical queries typed via a web UI
 - Ingested files (PDF or TXT) auto-chunked into the vector DB
 
-### 🧠 RAG Pipeline (BioGPT + Qdrant)
+###  RAG Pipeline (BioGPT + Qdrant)
 - **Retriever:** `sentence-transformers/all-MiniLM-L6-v2` embeddings stored in **Qdrant**
 - **Generator:** **BioGPT-Large** (by Microsoft) for medically accurate, context-constrained answers
 - **Prompting:** Strict clinical prompt to avoid hallucinations
 
-### 🔐 Privacy via MPC (Simulated)
+###  Privacy via MPC (Simulated)
 - Key modules like vector search, file ingestion, and LLM invocation can be isolated or containerized to simulate privacy-preserving computation using MPC principles.
 
-### 🌐 Remote Access via Tailscale
+###  Remote Access via Tailscale
 - **FastAPI** backend accessible via your secure **Tailscale IP**
 - Web UI allows upload and querying from phone or laptop
 
 ---
 
-## 🧪 Example Use Case (Layman Terms)
+##  Example Use Case (Layman Terms)
 
 A doctor types:
 > _"What is the treatment protocol for Type 2 diabetes?"_
@@ -39,7 +39,7 @@ A doctor types:
 
 ---
 
-## 📦 Tools & Components
+##  Tools & Components
 
 | Component | Role |
 |----------|------|
@@ -53,7 +53,7 @@ A doctor types:
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 clinical-rag-agent/
@@ -77,7 +77,7 @@ clinical-rag-agent/
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ```bash
 git clone https://github.com/yourusername/clinical-rag-agent
@@ -94,7 +94,7 @@ uv run uvicorn api.main:app --reload --port 8000
 
 ---
 
-## ✅ To-Do / Roadmap
+##  To-Do / Roadmap
 
 - [x] BioGPT-based context-aware answering
 - [x] Qdrant integration for fast retrieval
