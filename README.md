@@ -1,78 +1,73 @@
-# 🩺 MedPrivAgent – Privacy-Aware Clinical AI Assistant
-![](https://github.com/prakhar105/clinical-rag-agent/blob/main/assests/logo.png)
-**MedPrivAgent** is a local, privacy-preserving clinical assistant built using **Retrieval-Augmented Generation (RAG)** to help healthcare professionals query and summarize clinical information. It uses **BioGPT-Large** for generation, **Qdrant** for semantic retrieval, and supports **secure remote access** through **Tailscale**.
+# 🩺 MedPrivAgent – Privacy-Aware Clinical RAG Assistant
 
-All computation runs locally (e.g., RTX 4060 laptop), ensuring no sensitive patient data leaves the device. The architecture simulates **Multi-Party Computation (MPC)** concepts for privacy-preserving workflows.
+<img src="assets/logo.png" width="200" alt="MedPrivAgent Logo" />
 
-![](https://github.com/prakhar105/clinical-rag-agent/blob/main/assests/app.png)
+**MedPrivAgent** is a local, privacy-conscious AI assistant designed for healthcare professionals. Built with **Retrieval-Augmented Generation (RAG)**, it enables secure querying over sensitive medical documents using **BioGPT-Large** and **Qdrant**, with advanced features like **continuous ingestion**, **semantic search**, and **MPC-inspired modular design**.
+
+All processing is performed **locally**, and remote access is secured via **Tailscale**, making it ideal for clinics, hospitals, or research labs that need offline, confidential AI assistance.
+
+![UI Preview](assets/app.png)
+
 ---
 
 ##  Core Features
 
-###  Input
-- Textual medical queries typed via a web UI
-- Ingested files (PDF or TXT) auto-chunked into the vector DB
+###  Query & Summarization
+- Natural language questions via web UI
+- Context-rich answers in clinical tone from **BioGPT**
+- Built-in “Show Source Context” toggle for traceability
 
-###  RAG Pipeline (BioGPT + Qdrant)
-- **Retriever:** `sentence-transformers/all-MiniLM-L6-v2` embeddings stored in **Qdrant**
-- **Generator:** **BioGPT-Large** (by Microsoft) for medically accurate, context-constrained answers
-- **Prompting:** Strict clinical prompt to avoid hallucinations
+###  RAG Pipeline (Custom BioGPT + Qdrant)
+- **Embedding Model**: `all-MiniLM-L6-v2`
+- **Generator**: Microsoft’s **BioGPT-Large**
+- **Retriever**: Qdrant-based local vector search
+- Strict medical prompt to reduce hallucinations
 
-###  Privacy via MPC (Simulated)
-- Key modules like vector search, file ingestion, and LLM invocation can be isolated or containerized to simulate privacy-preserving computation using MPC principles.
+###  Privacy & Isolation
+- No cloud APIs, no internet dependency
+- Simulated **MPC-style** separation of modules
+- Ideal for confidential patient or research data
+
+###  Continuous Ingestion (Watchdog)
+- Auto-detects new PDF/TXT files in `data/clinical_data/`
+- Extracts content and pushes to vector DB with `scripts/continuous_ingestion_pipeline.py`
+- Optimized for real-time hospital data flows
 
 ###  Remote Access via Tailscale
-- **FastAPI** backend accessible via your secure **Tailscale IP**
-- Web UI allows upload and querying from phone or laptop
+- UI + API served via **FastAPI**
+- Access securely from any Tailscale-connected device
 
 ---
 
-##  Example Use Case (Layman Terms)
-
-A doctor types:
-> _"What is the treatment protocol for Type 2 diabetes?"_
-
-- MedPrivAgent retrieves relevant medical text chunks from local files
-- Passes them as **context** to BioGPT
-- Returns a 1–2 paragraph clinical summary answer
-- All computation happens **locally**, with no internet or API calls
-
----
-
-##  Tools & Components
-
-| Component | Role |
-|----------|------|
-| BioGPT-Large | Medical text generation |
-| MiniLM-L6-v2 | Lightweight embedding for retrieval |
-| Qdrant | Local vector database |
-| FastAPI | RESTful backend |
-| Tailscale | Secure VPN for remote access |
-| PyMuPDF / PDFMiner | File parsing and chunking |
-| Simulated MPC | Modular privacy-preserving workflow logic |
-
----
-
-##  Project Structure
+##  Directory Structure
 
 ```
-clinical-rag-agent/
+MedPrivAgent/
 ├── app/
-│   ├── rag_pipeline.py        # RAG pipeline (retriever + BioGPT)
-│   ├── utils.py               # Cleaning, ingestion, preprocessing
+│   ├── main.py                   # FastAPI web server
+│   ├── rag_pipeline.py          # End-to-end RAG logic
+│   └── templates/index.html     # UI: chat & upload interface
 │
-├── api/
-│   └── main.py                # FastAPI backend
+├── assets/
+│   ├── app.png                  # App screenshot
+│   └── logo.png                 # Logo
 │
-├── vector_store/              # Qdrant local DB
+├── data/
+│   ├── clinical_data/           # Raw PDFs or .txt inputs
+│   ├── processed_data/          # Cleaned and chunked text
+│   └── offload_biogpt/          # (Optional) offloaded generations
 │
-├── static/
-│   └── index.html             # Chat UI (HTML + JS)
+├── scripts/
+│   ├── continuous_ingestion_pipeline.py  # Watchdog ingestion
+│   ├── data_preperation.py               # PDF/TXT to chunks
+│   └── ingest_rag_files.py               # Manual ingestion tool
 │
-├── uploads/                   # Uploaded PDFs / TXT files
-├── requirements.txt
+├── vector_store/               # Qdrant DB dump (persistent)
+├── run.py                      # Entry script
+├── run_server.py               # Dev server runner
 ├── README.md
-└── tailscale_setup.md
+├── pyproject.toml
+└── .gitignore
 ```
 
 ---
@@ -80,27 +75,80 @@ clinical-rag-agent/
 ##  Quick Start
 
 ```bash
-git clone https://github.com/yourusername/clinical-rag-agent
-cd clinical-rag-agent
+git clone https://github.com/yourusername/MedPrivAgent.git
+cd MedPrivAgent
 uv venv .venv
-source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+source .venv/bin/activate  # or .venv\Scripts\activate
 uv pip install -r requirements.txt
-uv run uvicorn api.main:app --reload --port 8000
+uv run run_server.py
 ```
 
-- Open browser: `http://localhost:8000`
-- Upload PDF/TXT
-- Ask clinical questions
+Then open: [http://localhost:8000](http://localhost:8000)
 
 ---
 
-##  To-Do / Roadmap
+##  Continuous File Ingestion
 
-- [x] BioGPT-based context-aware answering
-- [x] Qdrant integration for fast retrieval
-- [x] File upload + auto-ingestion pipeline
-- [x] Clean prompt formatting and output postprocessing
-- [ ] Add MPC containerization and benchmarking
-- [ ] Enable feedback loop for user correction
+To enable real-time file ingestion:
+
+```bash
+uv run scripts/continuous_ingestion_pipeline.py
+```
+
+This will:
+- Watch the `data/clinical_data` folder for changes
+- Automatically chunk new files
+- Update the vector database with fresh content
+
+You can optionally schedule this with **systemd**, **supervisord**, or a **cron job** for background ingestion.
 
 ---
+
+##  Sample Query
+
+> _"What is the treatment protocol for Type 2 diabetes?"_
+
+- 🔍 Retrieves relevant passages from uploaded files
+- 🧠 BioGPT generates 1–2 paragraph clinical summary
+- 🛡️ Everything stays local
+
+---
+
+##  Tech Stack
+
+| Component            | Purpose                           |
+|---------------------|-----------------------------------|
+| `BioGPT-Large`       | Domain-specific generation        |
+| `MiniLM-L6-v2`       | Embedding for semantic retrieval  |
+| `Qdrant`             | Local vector DB                   |
+| `FastAPI`            | Backend + file handling           |
+| `Tailscale`          | Secure VPN                        |
+| `watchdog`           | Real-time directory monitoring    |
+| `PDFMiner`, `PyMuPDF`| PDF text extraction               |
+
+---
+
+##  Roadmap
+
+- [x] RAG with BioGPT + Qdrant
+- [x] Chunked PDF/TXT ingestion
+- [x] Show/hide source context in UI
+- [x] Watchdog-based live ingestion
+- [ ] Add MPC container support
+- [ ] Admin dashboard for clinical audit logs
+- [ ] Fine-tuning option for local BioGPT retraining
+
+---
+
+##  Ideal Use Cases
+
+- Local AI assistant in hospitals or clinics
+- Medical record summarization in offline settings
+- Secure RAG over proprietary research datasets
+- Internal tools for regulatory or compliance audits
+
+---
+
+Feel free to contribute or fork this repo to build your own **private, offline clinical GPT agent**!
+
+> Made with ❤️ for doctors, data scientists & privacy geeks.
