@@ -29,24 +29,24 @@ if collection_name not in existing:
         vectors_config=VectorParams(size=384, distance=Distance.COSINE)
     )
 
-# # ✅ Correctly initialize Qdrant vector store
+# #  Correctly initialize Qdrant vector store
 # qdrant = Qdrant(
 #     client=client,
 #     collection_name=collection_name,
-#     embeddings=embeddings  # ✅ Use 'embeddings=', NOT 'embedding_function='
+#     embeddings=embeddings  #  Use 'embeddings=', NOT 'embedding_function='
 # )
 
-# # ✅ Ingest the texts
+# #  Ingest the texts
 # qdrant.add_texts(texts=texts, metadatas=metadatas)
 
 # Create vector store using updated class
 qdrant = QdrantVectorStore(
     collection_name=collection_name,
     client=client,
-    embedding=embeddings,  # ✅ not `embeddings`
+    embedding=embeddings,  #  not `embeddings`
 )
 
 # Add your data
 qdrant.add_texts(texts=texts, metadatas=metadatas)
 
-print("✅ Qdrant vector store created and populated.")
+print(" Qdrant vector store created and populated.")

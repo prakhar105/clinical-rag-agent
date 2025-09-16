@@ -25,4 +25,4 @@ async def upload_file(file: UploadFile):
     file_path = UPLOAD_DIR / file.filename
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
-    return JSONResponse({"message": f"✅ {file.filename} uploaded. It will be auto-ingested shortly."})
+    return JSONResponse({"message": f" {file.filename} uploaded. It will be auto-ingested shortly."})

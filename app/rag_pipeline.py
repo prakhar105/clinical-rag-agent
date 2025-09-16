@@ -10,7 +10,7 @@ from langchain.prompts import PromptTemplate
 from qdrant_client import QdrantClient
 
 
-# 🧹 Clean up BioGPT output
+#  Clean up BioGPT output
 def clean_biogpt_output(text: str) -> str:
     text = re.sub(r'<[^>]+>', '', text)                # Remove <TAGS>
     text = re.sub(r'▃+', '', text)                     # Remove separators
@@ -26,7 +26,7 @@ def extract_answer_from_output(output: str) -> str:
     return output.strip()
 
 
-# 🧠 Prompt Template
+#  Prompt Template
 prompt_template = PromptTemplate.from_template("""
 You are a helpful clinical assistant using BioGPT to answer questions about diabetes, inflammation, and related treatments.
 
@@ -45,7 +45,7 @@ Answer:
 """)
 
 
-# 🔎 Embeddings & Vector DB
+#  Embeddings & Vector DB
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 qdrant = QdrantClient(path="vector_store/qdrant_local")
@@ -56,7 +56,7 @@ vectorstore = QdrantVectorStore(
 )
 
 
-# 🧬 Load BioGPT (with CPU-safe config)
+#  Load BioGPT (with CPU-safe config)
 tokenizer = AutoTokenizer.from_pretrained("microsoft/BioGPT-Large")
 
 offload_dir = Path("offload_biogpt")
@@ -82,7 +82,7 @@ generator = pipeline(
 
 llm = HuggingFacePipeline(pipeline=generator)
 
-# 🧠 RAG + Retrieval
+#  RAG + Retrieval
 qa_chain = RetrievalQA.from_chain_type(
     llm=llm,
     chain_type="stuff",
@@ -92,7 +92,7 @@ qa_chain = RetrievalQA.from_chain_type(
 )
 
 
-# 🤖 Inference API
+#  Inference API
 def answer_question(query: str) -> dict:
     try:
         if query.strip().lower() in {"hello", "hi", "hey"}:
