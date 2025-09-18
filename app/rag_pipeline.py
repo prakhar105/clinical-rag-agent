@@ -8,6 +8,7 @@ from langchain_community.vectorstores import Qdrant as QdrantVectorStore
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from qdrant_client import QdrantClient
+from app.qdrant_manager import QdrantManager
 
 
 #  Clean up BioGPT output
@@ -45,16 +46,18 @@ Answer:
 """)
 
 
-#  Embeddings & Vector DB
-embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+# #  Embeddings & Vector DB
+# embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-qdrant = QdrantClient(path="vector_store/qdrant_local")
-vectorstore = QdrantVectorStore(
-    client=qdrant,
-    collection_name="medprivagent_chunks",
-    embeddings=embedding_model
-)
+# qdrant = QdrantClient(path="vector_store/qdrant_local")
+# vectorstore = QdrantVectorStore(
+#     client=qdrant,
+#     collection_name="medprivagent_chunks",
+#     embeddings=embedding_model
+# )
 
+qdrant_manager = QdrantManager()
+retriever = qdrant_manager.get_retriever()
 
 #  Load BioGPT (with CPU-safe config)
 tokenizer = AutoTokenizer.from_pretrained("microsoft/BioGPT-Large")
@@ -86,7 +89,7 @@ llm = HuggingFacePipeline(pipeline=generator)
 qa_chain = RetrievalQA.from_chain_type(
     llm=llm,
     chain_type="stuff",
-    retriever=vectorstore.as_retriever(search_kwargs={"k": 5}),
+    retriever=retriever,
     return_source_documents=True,  # ✅ Enable to get `context`
     chain_type_kwargs={"prompt": prompt_template}
 )
