@@ -6,7 +6,7 @@
 
 All processing is performed **locally**, and remote access is secured via **Tailscale**, making it ideal for clinics, hospitals, or research labs that need offline, confidential AI assistance.
 
-![UI Preview](https://github.com/prakhar105/clinical-rag-agent/blob/main/assests/app.png)
+![UI Preview](https://github.com/prakhar105/clinical-rag-agent/blob/main/assets/app.png)
 
 ---
 
